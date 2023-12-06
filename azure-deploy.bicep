@@ -1,5 +1,5 @@
 //declare variables
-param vnetName string = 'embtxtdemo'
+param vnetName string = 'VNET-Name'
 param VCEName string = 'VCE-Demo01'
 param location string = 'eastus'
 param pubIPName string = 'VCEDemo01-pip'
