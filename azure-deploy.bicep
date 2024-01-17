@@ -198,6 +198,7 @@ resource internalInterface01 'Microsoft.Network/networkInterfaces@2021-02-01' = 
         }
       }
     ]
+    enableIPForwarding: true
   }
 }
 
@@ -232,6 +233,7 @@ resource publicInterface01 'Microsoft.Network/networkInterfaces@2021-02-01' = {
         }
       }
     ]
+    enableIPForwarding: true
   }
 }
 
@@ -252,6 +254,7 @@ resource m365Interface01 'Microsoft.Network/networkInterfaces@2021-02-01' = {
         }
       }
     ]
+    enableIPForwarding: true
   }
 }
 
@@ -271,6 +274,7 @@ resource GE1Interface01 'Microsoft.Network/networkInterfaces@2021-02-01' = {
         }
       }
     ]
+    enableIPForwarding: true
   }
 }
 
@@ -365,6 +369,7 @@ resource internalInterface02 'Microsoft.Network/networkInterfaces@2021-02-01' = 
         }
       }
     ]
+    enableIPForwarding: true
   }
 }
 
@@ -399,6 +404,7 @@ resource publicInterface02 'Microsoft.Network/networkInterfaces@2021-02-01' = {
         }
       }
     ]
+    enableIPForwarding: true
   }
 }
 
@@ -419,6 +425,7 @@ resource m365Interface02 'Microsoft.Network/networkInterfaces@2021-02-01' = {
         }
       }
     ]
+    enableIPForwarding: true
   }
 }
 
@@ -438,6 +445,7 @@ resource GE1Interface02 'Microsoft.Network/networkInterfaces@2021-02-01' = {
         }
       }
     ]
+    enableIPForwarding: true
   }
 }
 
