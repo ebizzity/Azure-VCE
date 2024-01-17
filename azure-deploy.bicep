@@ -4,16 +4,19 @@ param vnetName string = 'VNETName'
 param VCEName string = 'VCE-Demo01'
 param location string = 'eastus'
 param pubIPName string = 'VCEDemo01-pip'
+param GE1InterfaceSubnetName string = 'GE1Subnet'
+param GE1subnetPrefix string = '10.220.0.48/28'
 param pubInterfaceSubnetName string = 'Public'
 param pubsubnetPrefix string = '10.220.0.0/28'
 param intInterfaceSubnetName string = 'Inside'
 param intsubnetPrefix string = '10.220.0.16/28'
 param m365InterfaceSubnetName string = 'M365-Egress'
 param m365subnetPrefix string = '10.220.0.32/28'
+param pipprefixLength int = 30
 param adminUsername string = 'azureuser'
 @secure()
 param adminPassword string 
-param pipprefixLength int = 30
+
 
 // reference existing vnet
 resource vnet 'Microsoft.Network/virtualNetworks@2023-04-01' existing = {
@@ -40,6 +43,18 @@ resource intSubnet 'Microsoft.Network/virtualNetworks/subnets@2023-04-01' = {
     addressPrefix: intsubnetPrefix
     networkSecurityGroup: {
       id: intnsg.id
+    }
+}
+}
+
+//update existing subnet with NSG
+resource GE1Subnet 'Microsoft.Network/virtualNetworks/subnets@2023-04-01' = {
+  name: GE1InterfaceSubnetName
+  parent: vnet
+  properties: {
+    addressPrefix: GE1subnetPrefix
+    networkSecurityGroup: {
+      id: ge1nsg.id
     }
 }
 }
@@ -92,6 +107,16 @@ resource natGateway 'Microsoft.Network/natGateways@2021-02-01' = {
   }
 }
       
+// Create Network Security Group
+resource ge1nsg 'Microsoft.Network/networkSecurityGroups@2021-02-01' = {
+  name: '${VCEName}-ge1-nsg'
+  location: location
+  properties: {
+    securityRules: [
+  
+    ]
+  }
+}
 
 // Create Network Security Group
 resource pubnsg 'Microsoft.Network/networkSecurityGroups@2021-02-01' = {
@@ -230,6 +255,25 @@ resource m365Interface01 'Microsoft.Network/networkInterfaces@2021-02-01' = {
   }
 }
 
+// Create GE1 interface
+resource GE1Interface01 'Microsoft.Network/networkInterfaces@2021-02-01' = {
+  name: '${VCEName}-GE1-01'
+  location: location
+  properties: {
+    ipConfigurations: [
+      {
+        name: 'GE1'
+        properties: {
+          subnet: {
+            id: GE1Subnet.id
+          }
+          privateIPAllocationMethod: 'Dynamic'
+        }
+      }
+    ]
+  }
+}
+
 // Create VCE VM and attach interfaces
 resource VCEVM01 'Microsoft.Compute/virtualMachines@2021-03-01' = {
   name: '${VCEName}-01'
@@ -272,7 +316,7 @@ resource VCEVM01 'Microsoft.Compute/virtualMachines@2021-03-01' = {
     networkProfile: {
       networkInterfaces: [
         {
-          id: internalInterface01.id
+          id: GE1Interface01.id
           properties: {
             primary: true
           }
@@ -285,6 +329,12 @@ resource VCEVM01 'Microsoft.Compute/virtualMachines@2021-03-01' = {
         }
         {
           id: m365Interface01.id
+          properties: {
+            primary: false
+          }
+        }
+        {
+          id: internalInterface01.id
           properties: {
             primary: false
           }
@@ -372,6 +422,25 @@ resource m365Interface02 'Microsoft.Network/networkInterfaces@2021-02-01' = {
   }
 }
 
+// Create GE1 interface
+resource GE1Interface02 'Microsoft.Network/networkInterfaces@2021-02-01' = {
+  name: '${VCEName}-GE1-02'
+  location: location
+  properties: {
+    ipConfigurations: [
+      {
+        name: 'GE1'
+        properties: {
+          subnet: {
+            id: GE1Subnet.id
+          }
+          privateIPAllocationMethod: 'Dynamic'
+        }
+      }
+    ]
+  }
+}
+
 // Create VCE VM and attach interfaces
 resource VCEVM02 'Microsoft.Compute/virtualMachines@2021-03-01' = {
   name: '${VCEName}-02'
@@ -414,19 +483,25 @@ resource VCEVM02 'Microsoft.Compute/virtualMachines@2021-03-01' = {
     networkProfile: {
       networkInterfaces: [
         {
-          id: publicInterface02.id
+          id: GE1Interface02.id
           properties: {
             primary: true
           }
         }
         {
-          id: internalInterface02.id
+          id: publicInterface02.id
           properties: {
             primary: false
           }
         }
         {
           id: m365Interface02.id
+          properties: {
+            primary: false
+          }
+        }
+        {
+          id: internalInterface02.id
           properties: {
             primary: false
           }
