@@ -1,6 +1,5 @@
 //declare variables
 param AllowSSHFromIP string = 'x.x.x.x'
-param vcecount int = 2
 param vnetName string = 'VNETName'
 param VCEName string = 'VCE-Demo01'
 param location string = 'eastus'
@@ -273,13 +272,13 @@ resource VCEVM01 'Microsoft.Compute/virtualMachines@2021-03-01' = {
     networkProfile: {
       networkInterfaces: [
         {
-          id: publicInterface01.id
+          id: internalInterface01.id
           properties: {
             primary: true
           }
         }
         {
-          id: internalInterface01.id
+          id: publicInterface01.id
           properties: {
             primary: false
           }
